@@ -1,0 +1,56 @@
+syntax = "proto2";
+
+// Represents a line of a poem.
+message Line {
+
+  // The text of the line of the poem.
+  optional string text = 1;
+
+  // Zero-indexed count of the line in the poem.
+  optional uint32 index = 2;
+}
+
+// Represents a stanza of the poem.
+message Stanza {
+  // The lines of this stanza.
+  repeated Line lines = 1;
+}
+
+// Represents groups of rhyming lines.
+message RhymeSet {
+
+  // The indices of lines with common end rhymes.
+  repeated uint32 rhyme_indices = 1;
+
+  // The most "representative" word in this rhymeset (selected based
+  // how frequently the word is used in English).
+  optional string root_rhyme = 2;
+}
+
+// Represents a poem.
+// Next tag: 5
+message Poem {
+
+  // The title of the poem.
+  optional string title = 1;
+
+  // The author of the poem.
+  optional string author = 2;
+
+  // Represents the text of the poem.
+  // Should have Lines only if Stanza data is unavailable.
+  repeated Entity entity = 3;
+
+  // The rhyme data of the poem.
+  repeated RhymeSet rhyme_sets = 4;
+
+  // Represents text entities in the poem.
+  message Entity {
+    oneof entity {
+      // A stanza in the poem.
+      Stanza stanza = 1;
+      // A line in the poem.
+      Line line = 2;
+    }
+  }
+}
