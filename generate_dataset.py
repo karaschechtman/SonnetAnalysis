@@ -11,10 +11,10 @@ sonnets_info with the DataLoader.
 
 import optparse
 import os
-import urllib
 import sys
 
 from bs4 import BeautifulSoup
+from urllib.request import urlopen
 from util.dataset_utils import *
 from proto.Poem_pb2 import *
 
@@ -41,37 +41,39 @@ SPENSER_STORE = "./data/spenser_amoretti"
 HTML = ".html"
 PARSER = "html.parser"
 
-def IngestShakespeareSonnets():
+def IngestShakespeareSonnets(verbose):
     store = open(SHAKESPEARE_STORE, "w")
     for i in range(1, NUM_SHAKESPEARE_POEMS + 1):
-        page = urllib.urlopen(SHAKESPEARE_URL + GetRoman(i) +
-                               HTML)
+        url = SHAKESPEARE_URL + GetRoman(i) + HTML
+        page = urlopen(url)
         soup = BeautifulSoup(page, PARSER)
         lines = soup.getText().split("\n")[SHAKESPEARE_START:
                                            SHAKESPEARE_END]
-        poem = GeneratePoem(lines, str(i), SHAKESPEARE)
-        store.write(poem.SerializeToString() + '\n')
+        poem = GeneratePoem(lines, str(i), SHAKESPEARE, verbose)
+        store.write(poem.SerializeToString().decode("utf-8"))
+        store.write('\n')
 
     store.close()
 
-def IngestSpenserSonnets():
+def IngestSpenserSonnets(verbose):
     store = open(SPENSER_STORE, "w")
     count = 1
     for i in range(1, NUM_SPENSER_PARTS + 1):
         url = SPENSER_PART_URL + str(i) + HTML
-        page = urllib2.urlopen(url)
+        page = urlopen(url)
         soup = BeautifulSoup(page, PARSER)
         for poem in soup.select('ul dl'):
             lines = poem.getText().splitlines()[1:] # first line blank
-            poem = GeneratePoem(lines, str(count), SPENSER)
+            poem = GeneratePoem(lines, str(count), SPENSER, verbose)
             count +=1
-            store.write(poem.SerializeToString() + '\n')
+            store.write(poem.SerializeToString().decode("utf-8"))
+            store.write('\n')
 
     store.close()
 
-def IngestSidneySonnets():
+def IngestSidneySonnets(verbose):
     store = open(SIDNEY_STORE, "w")
-    page = urllib2.urlopen(OLD_SIDNEY_URL)
+    page = urlopen(OLD_SIDNEY_URL)
     soup = BeautifulSoup(page, PARSER)
     count = 1
     for poem in soup.select('blockquote'):
@@ -81,9 +83,10 @@ def IngestSidneySonnets():
         for line in poem_split_first[2:]:
             lines.append(line)
         if len(lines) <= 14:
-            poem = GeneratePoem(lines, str(count), SIDNEY)
+            poem = GeneratePoem(lines, str(count), SIDNEY, verbose)
             count+=1
-            store.write(poem.SerializeToString() + '\n')
+            store.write(poem.SerializeToString().decode("utf-8"))
+            store.write('\n')
 
 def main():
     parser = optparse.OptionParser()
@@ -100,13 +103,19 @@ def main():
                       help="Ingest Spenser's sonnets.",
                       action="store_true",
                       default=False)
+
+    parser.add_option("--verbose",
+                      help="Verbose mode",
+                      action="store_true",
+                      default=False)
+
     (options, args) = parser.parse_args()
     if options.sidney:
-        IngestSidneySonnets()
+        IngestSidneySonnets(options.verbose)
     if options.shakespeare:
-        IngestShakespeareSonnets()
+        IngestShakespeareSonnets(options.verbose)
     if options.spenser:
-        IngestSpenserSonnets()
+        IngestSpenserSonnets(options.verbose)
 
 
 if __name__ == "__main__":

@@ -49,7 +49,7 @@ and its author. Meant for use during the ingestion process.
 Will not generate stanzas.
 ::param:: lines the lines of the poem.
 '''
-def GeneratePoem(sentences, title, author):
+def GeneratePoem(sentences, title, author, verbose):
     poem = Poem()
     poem.title = title
     poem.author = author
@@ -61,7 +61,8 @@ def GeneratePoem(sentences, title, author):
         j+=1
         entity = poem.entity.add()
         entity.line.CopyFrom(line)
-    print('Generated poem %s by %s.' % (poem.title, poem.author))
+    if verbose:
+        print('Generated poem %s by %s.' % (poem.title, poem.author))
     return poem
 
 '''

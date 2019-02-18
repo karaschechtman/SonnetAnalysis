@@ -11,7 +11,7 @@ protoc --proto_path=./proto/ --python_out=./proto/ proto/Poem.proto
 
 2. Generate serialized protos from scraped data with flags for authors:
 ```
-python3 generate_dataset.py --sidney --shakespeare --spenser
+python3 generate_dataset.py --sidney --shakespeare --spenser --verbose
 ```
 
 # Author
