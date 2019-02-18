@@ -71,6 +71,7 @@ Remove superfluous punctuation and digits from a line of poetry.
 ::return:: the cleaned line
 '''
 def _CleanLine(line):
+    line = line.strip()
     words = [x.strip().strip(string.punctuation).strip(string.digits)
              for x in line.split()]
     s = ' '.join(words)

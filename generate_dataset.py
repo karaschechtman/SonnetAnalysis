@@ -21,7 +21,7 @@ from proto.Poem_pb2 import *
 # Sidney constants.
 SIDNEY = "Philip Sidney"
 OLD_SIDNEY_URL = "http://www.luminarium.org/renascence-editions/stella.html"
-SIDNEY_STORE = "./data/sidney_astrophil"
+SIDNEY_DIR = "./data/sidney_astrophil/"
 
 # Shakespeare constants.
 NUM_SHAKESPEARE_POEMS = 154
@@ -29,20 +29,19 @@ SHAKESPEARE = "William Shakespeare"
 SHAKESPEARE_START = 2 # first line of scraped poems
 SHAKESPEARE_END = 16 # last line of scraped poems
 SHAKESPEARE_URL = "http://shakespeare.mit.edu/Poetry/sonnet."
-SHAKESPEARE_STORE = "./data/shakespeare_sonnets"
+SHAKESPEARE_DIR = "./data/shakespeare_sonnets/"
 
 # Spenser constants.
 NUM_SPENSER_PARTS = 3
 SPENSER = "Edmund Spenser"
 SPENSER_PART_URL = "http://www.theotherpages.org/poems/spenser"
-SPENSER_STORE = "./data/spenser_amoretti"
+SPENSER_DIR = "./data/spenser_amoretti/"
 
 # General constants.
 HTML = ".html"
 PARSER = "html.parser"
 
 def IngestShakespeareSonnets(verbose):
-    store = open(SHAKESPEARE_STORE, "w")
     for i in range(1, NUM_SHAKESPEARE_POEMS + 1):
         url = SHAKESPEARE_URL + GetRoman(i) + HTML
         page = urlopen(url)
@@ -50,33 +49,29 @@ def IngestShakespeareSonnets(verbose):
         lines = soup.getText().split("\n")[SHAKESPEARE_START:
                                            SHAKESPEARE_END]
         poem = GeneratePoem(lines, str(i), SHAKESPEARE, verbose)
-        store.write(poem.SerializeToString().decode("utf-8"))
-        store.write('\n')
-
-    store.close()
+        filename = SHAKESPEARE_DIR + poem.title + '.txt'
+        with open(filename, 'wb+') as store:
+            store.write(poem.SerializeToString())
 
 def IngestSpenserSonnets(verbose):
-    store = open(SPENSER_STORE, "w")
     count = 1
     for i in range(1, NUM_SPENSER_PARTS + 1):
         url = SPENSER_PART_URL + str(i) + HTML
         page = urlopen(url)
         soup = BeautifulSoup(page, PARSER)
-        for poem in soup.select('ul dl'):
+        for poem in soup.select("ul dl"):
             lines = poem.getText().splitlines()[1:] # first line blank
             poem = GeneratePoem(lines, str(count), SPENSER, verbose)
             count +=1
-            store.write(poem.SerializeToString().decode("utf-8"))
-            store.write('\n')
-
-    store.close()
+            filename = SPENSER_DIR + poem.title + '.txt'
+            with open(filename, 'wb+') as store:
+                store.write(poem.SerializeToString())
 
 def IngestSidneySonnets(verbose):
-    store = open(SIDNEY_STORE, "w")
     page = urlopen(OLD_SIDNEY_URL)
     soup = BeautifulSoup(page, PARSER)
     count = 1
-    for poem in soup.select('blockquote'):
+    for poem in soup.select("blockquote"):
         poem_split_first = poem.getText().splitlines()[1:-1]
         # Put together first line
         lines = [poem_split_first[0] + ' ' + poem_split_first[1]]
@@ -85,8 +80,9 @@ def IngestSidneySonnets(verbose):
         if len(lines) <= 14:
             poem = GeneratePoem(lines, str(count), SIDNEY, verbose)
             count+=1
-            store.write(poem.SerializeToString().decode("utf-8"))
-            store.write('\n')
+            filename = SIDNEY_DIR + poem.title + '.txt'
+            with open(filename, 'wb+') as store:
+                store.write(poem.SerializeToString())
 
 def main():
     parser = optparse.OptionParser()
