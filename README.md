@@ -2,9 +2,9 @@
 
 # Setup
 1. Install dependencies:
-  - Protobuf
-  - DataMuse
-
+	- Protobuf
+	- DataMuse
+	- NetworkX
 2. Generate protobuf code:
 ```
 protoc --proto_path=./proto/ --python_out=./proto/ proto/Poem.proto
