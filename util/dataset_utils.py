@@ -55,12 +55,13 @@ def GeneratePoem(sentences, title, author, verbose):
     poem.author = author
     j = 0
     for sentence in sentences:
-        line = Line()
-        line.text = _CleanLine(sentence)
-        line.index = j
-        j+=1
-        entity = poem.entity.add()
-        entity.line.CopyFrom(line)
+        if len(sentence.strip()) != 0:
+            line = Line()
+            line.text = _CleanLine(sentence)
+            line.index = j
+            j+=1
+            entity = poem.entity.add()
+            entity.line.CopyFrom(line)
     if verbose:
         print('Generated poem %s by %s.' % (poem.title, poem.author))
     return poem
@@ -71,7 +72,6 @@ Remove superfluous punctuation and digits from a line of poetry.
 ::return:: the cleaned line
 '''
 def _CleanLine(line):
-    line = line.strip()
     words = [x.strip().strip(string.punctuation).strip(string.digits)
              for x in line.split()]
     s = ' '.join(words)
