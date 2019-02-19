@@ -3,7 +3,7 @@ import os
 from proto.Poem_pb2 import *
 
 '''
-Load Data on Poem objects.
+Load Data on Poem objects for a particular sequence.
 '''
 class DataLoader(object):
 
@@ -19,3 +19,13 @@ class DataLoader(object):
                     poem = Poem()
                     poem.ParseFromString(file.read())
                     self.poems[poem.title] = poem
+
+    '''
+    Update a poem object within the sonnet sequence.
+    '''
+    def update_poem(poem):
+        self.poems[poem.title] = poem
+
+    def write(self):
+        # TODO(karaschechtman)
+        return None

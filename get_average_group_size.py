@@ -1,9 +1,14 @@
 from data_loader import DataLoader
-from predict_rhymes import predict_poem_rhyme_groups
+from datamuse import datamuse
+from rhyme_labeler import RhymeLabeler
 import statistics
 
+DATAMUSE_MAX = 100
+api = datamuse.Datamuse()
+
 # https://stackoverflow.com/questions/3173320/text-progress-bar-in-the-console
-def printProgressBar (iteration, total, prefix = '', suffix = '', decimals = 1, length = 50, fill = '█'):
+def print_progress(iteration, total, prefix = '', suffix = '',
+                   decimals = 1, length = 50, fill = '█'):
     """
     Call in a loop to create terminal progress bar
     @params:
@@ -23,21 +28,30 @@ def printProgressBar (iteration, total, prefix = '', suffix = '', decimals = 1, 
     if iteration == total:
         print()
 
+
+def add_rhymes(words, rhyme_dict):
+    for word in words:
+        if word not in rhyme_dict:
+            rhyme_dict[word] = [d['word'] for d in api.words(rel_rhy=word, max=DATAMUSE_MAX)]
+
+# Create rhyme labeler.
+rhyme_labeler = RhymeLabeler(add_rhymes)
+
 # SHAKESPEARE
 shakespeare_data = DataLoader("data/shakespeare_sonnets/")
 group_sizes = []
 i = 0
 l = len(shakespeare_data.poems)
 print('Shakespeare - Sonnets:')
-printProgressBar(0, l, prefix = 'Progress:', suffix = 'Complete')
+print_progress(0, l, prefix = 'Progress:', suffix = 'Complete')
 for poem in shakespeare_data.poems.values():
-    groups = predict_poem_rhyme_groups(poem)
+    groups = rhyme_labeler.label_poem_rhymes(poem)
     group_sizes += [len(group) for group in groups]
     i += 1
-    printProgressBar(i, l, prefix = 'Progress:', suffix = 'Complete', length = 50)
+    print_progress(i, l, prefix = 'Progress:', suffix = 'Complete')
 
 print('Average group size: %f' % (sum(group_sizes)/len(group_sizes)))
-print('Largest group size: %f' % (max(group_sizes)))
+print('Largest group size: %d' % (max(group_sizes)))
 print('Standard deviation: %f' % (statistics.stdev(group_sizes)))
 
 
@@ -47,15 +61,15 @@ group_sizes = []
 l = len(spenser_data.poems)
 i = 0
 print('Spenser - Amoretti:')
-printProgressBar(i, l, prefix = 'Progress:', suffix = 'Complete')
+print_progress(i, l, prefix = 'Progress:', suffix = 'Complete')
 for poem in spenser_data.poems.values():
-    groups = predict_poem_rhyme_groups(poem)
+    groups = rhyme_labeler.label_poem_rhymes(poem)
     group_sizes += [len(group) for group in groups]
     i += 1
-    printProgressBar(i, l, prefix = 'Progress:', suffix = 'Complete', length = 50)
+    print_progress(i, l, prefix = 'Progress:', suffix = 'Complete')
 
 print('Average group size: %f' % (sum(group_sizes)/len(group_sizes)))
-print('Largest group size: %f' % (max(group_sizes)))
+print('Largest group size: %d' % (max(group_sizes)))
 print('Standard deviation: %f' % (statistics.stdev(group_sizes)))
 
 # SIDNEY
@@ -64,13 +78,13 @@ group_sizes = []
 i = 0
 l = len(sidney_data.poems)
 print('Sidney - Astrophil:')
-printProgressBar(0, l, prefix = 'Progress:', suffix = 'Complete')
+print_progress(0, l, prefix = 'Progress:', suffix = 'Complete')
 for poem in sidney_data.poems.values():
-    groups = predict_poem_rhyme_groups(poem)
+    groups = rhyme_labeler.label_poem_rhymes(poem)
     group_sizes += [len(group) for group in groups]
     i += 1
-    printProgressBar(i, l, prefix = 'Progress:', suffix = 'Complete', length = 50)
+    print_progress(i, l, prefix = 'Progress:', suffix = 'Complete')
 
 print('Average group size: %f' % (sum(group_sizes)/len(group_sizes)))
-print('Largest group size: %f' % (max(group_sizes)))
+print('Largest group size: %d' % (max(group_sizes)))
 print('Standard deviation: %f' % (statistics.stdev(group_sizes)))
