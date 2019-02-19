@@ -6,7 +6,6 @@ import networkx as nx
 api = datamuse.Datamuse()
 
 # Rhyme schemes.
-# CHANGE TO SETS.
 TWO_SCHEMES = [[[0,1]]]
 FOUR_SCHEMES = [[[0,3],[1,2]], [[0,2],[1,3]],[[0,1],[2,3]]]
 SIX_SCHEMES = [[[0,3],[1,4],[2,5]],[[0,1],[2,5],[3,4]]]
@@ -129,13 +128,24 @@ def _get_rhyme_groups(lines):
             other_word = words[j]
             if other_word in rhymes[word]:
                 G.add_edge(i, j)
-    return list(nx.connected_components(G))
+    return [list(s) for s in list(nx.connected_components(G))]
 
-# TODO(karaschechtman)
+'''
+For hybrid labeling: merge rhyme groups. 
+'''
 def _combine_groups(rhyme_groups, rhyme_groups_2):
-    # WRITE CODE TO COMBINE THE RHYMESCHEME GROUP AND
-    # THE GROUPING GROUPS
-    return None
+    G = nx.Graph()
+    for group in rhyme_groups:
+        for i in range(len(group)):
+            for j in range(i+1, len(group)):
+                G.add_edge(group[i], group[j])
+
+    for group in rhyme_groups_2:
+        for i in range(len(group)):
+            for j in range(i+1, len(group)):
+                G.add_edge(group[i], group[j])
+
+    return [list(s) for s in list(nx.connected_components(G))]
 
 """
 Label a poem's rhyme groups by determining the indices of
@@ -149,7 +159,7 @@ There are three methods:
 :param scheme: set to True, the labeling will try to deduce the rhyme scheme.
 :param group: set to True, the labeling will match all lines that rhyme.
 """
-def label_rhyme_groups(poem, scheme=True, group=True):
+def predict_poem_rhyme_groups(poem, scheme=True, group=True):
     lines = [entity.line for entity in poem.entity]
     rhyme_groups = []
 
