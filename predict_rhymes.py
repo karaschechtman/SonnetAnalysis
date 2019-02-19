@@ -13,6 +13,9 @@ DATAMUSE_MAX = 100
 
 # Rhymes from Datamuse.
 # Stored statically to minimize API calls.
+# TODO(karaschechtman): make option for the rhyme dictionary
+# to grow with previously-encountered rhymes of a high enough
+# threshold score (non-zero) and with
 rhymes = {}
 
 '''
@@ -20,20 +23,21 @@ Return the last words of each line passed in.
 :param lines: the Line protos from which to get words.
 :return: a list of the rhyme words ending each line.
 '''
-def _collect_rhymes(lines):
+def _get_words(lines):
     rhyme_words = []
     for line in lines:
         rhyme_words.append(line.text.split()[-1])
     return rhyme_words
 
 """
-Helper to try different labelings of the octave.
+For scheme labeling: Helper to try different labelings of
+the octave.
 Tries ABBA CDDC, ABAB CDCD, and AABB CCDD.
 """
 def _label_octave(lines): # CURRENTLY FLAWED/NOT PERFECT YET.
     # Try different labelings of the quatrains.
-    words_quatrain_1 = _collect_rhymes(lines[0:4])
-    words_quatrain_2 = _collect_rhymes(lines[4:8])
+    words_quatrain_1 = _get_words(lines[0:4])
+    words_quatrain_2 = _get_words(lines[4:8])
     scheme_quatrain_1, score_quatrain_1 = _test_rhyme_scheme(words_quatrain_1, FOUR_SCHEMES)
     scheme_quatrain_2, score_quatrain_2 = _test_rhyme_scheme(words_quatrain_2, FOUR_SCHEMES)
 
@@ -42,19 +46,20 @@ def _label_octave(lines): # CURRENTLY FLAWED/NOT PERFECT YET.
     return scheme_octave + _shift_rhyme_scheme(scheme_octave, 4)
 
 """
-Helper to try different labelings of the sestet.
+For scheme labeling: Helper to try different labelings
+of the sestet.
 Tries EFEF GG, EFFE GG, EEFFGG, and EFG EFG.
 """
 def _label_sestet(lines): # CURRENTLY FLAWED/NOT PERFECT YET.
     # Try dividing the sestet into a quatrain and a couplet.
-    words_quatrain_3 = _collect_rhymes(lines[8:12])
-    words_couplet_3 = _collect_rhymes(lines[12:])
+    words_quatrain_3 = _get_words(lines[8:12])
+    words_couplet_3 = _get_words(lines[12:])
     scheme_quatrain_3, score_quatrain_3 = _test_rhyme_scheme(words_quatrain_3, FOUR_SCHEMES)
     scheme_couplet_3, score_couplet_3 = _test_rhyme_scheme(words_couplet_3, TWO_SCHEMES)
     score_c_q = score_quatrain_3 + score_couplet_3
 
     # Try labeling the sestet as two tercets.
-    words_sestet_3 = _collect_rhymes(lines[8:])
+    words_sestet_3 = _get_words(lines[8:])
     scheme_sestet_3, score_sestet_3 = _test_rhyme_scheme(words_sestet_3, SIX_SCHEMES)
 
     # Evaluate options for labeling the sestet.
@@ -66,7 +71,8 @@ def _label_sestet(lines): # CURRENTLY FLAWED/NOT PERFECT YET.
     return _shift_rhyme_scheme(scheme_sestet, 8)
 
 """
-Shift the indices of the rhyme scheme to match the poem.
+For scheme labeling: Shift the indices of the rhyme scheme
+to match the poem.
 :param shift_num: the number by which to shift the indices.
 """
 def _shift_rhyme_scheme(scheme, shift_num):
@@ -115,7 +121,7 @@ rhyme dictionary.
 '''
 def _get_rhyme_groups(lines):
     # Make graph.
-    words = _collect_rhymes(lines)
+    words = _get_words(lines)
     G = nx.Graph()
     G.add_nodes_from(range(len(words)))
 
