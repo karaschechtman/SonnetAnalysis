@@ -2,8 +2,8 @@
 This script generates Poem protos from scraped sonnets
 and does not annotate any of the poems with useful data.
 It is only meant for generating the dataset; you most likely
-do not need to use it. Instead, download/use the dataset
-sonnets_info with the DataLoader.
+do not need to use it. Instead, download the dataset
+from Google Drive.
 
 ::author:: Kara Schechtman
 ::version:: 2.0

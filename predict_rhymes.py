@@ -30,7 +30,7 @@ def _collect_rhymes(lines):
 Helper to try different labelings of the octave.
 Tries ABBA CDDC, ABAB CDCD, and AABB CCDD.
 """
-def _label_octave(lines):
+def _label_octave(lines): # CURRENTLY FLAWED/NOT PERFECT YET.
     # Try different labelings of the quatrains.
     words_quatrain_1 = _collect_rhymes(lines[0:4])
     words_quatrain_2 = _collect_rhymes(lines[4:8])
@@ -45,7 +45,7 @@ def _label_octave(lines):
 Helper to try different labelings of the sestet.
 Tries EFEF GG, EFFE GG, EEFFGG, and EFG EFG.
 """
-def _label_sestet(lines):
+def _label_sestet(lines): # CURRENTLY FLAWED/NOT PERFECT YET.
     # Try dividing the sestet into a quatrain and a couplet.
     words_quatrain_3 = _collect_rhymes(lines[8:12])
     words_couplet_3 = _collect_rhymes(lines[12:])
@@ -131,7 +131,7 @@ def _get_rhyme_groups(lines):
     return [list(s) for s in list(nx.connected_components(G))]
 
 '''
-For hybrid labeling: merge rhyme groups. 
+For hybrid labeling: merge rhyme groups.
 '''
 def _combine_groups(rhyme_groups, rhyme_groups_2):
     G = nx.Graph()
@@ -174,9 +174,9 @@ def predict_poem_rhyme_groups(poem, scheme=True, group=True):
         rhyme_groups = _get_rhyme_groups(lines)
 
     elif group and scheme:
-        scheme_octave = _label_octave(lines)
-        scheme_sestet = _label_sestet(lines)
         if len(lines) == 14:
+            scheme_octave = _label_octave(lines)
+            scheme_sestet = _label_sestet(lines)
             rhyme_groups = scheme_octave + scheme_sestet
         rhyme_groups_2 = _get_rhyme_groups(lines)
         rhyme_groups = _combine_groups(rhyme_groups, rhyme_groups_2)
