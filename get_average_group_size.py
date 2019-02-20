@@ -45,7 +45,7 @@ l = len(shakespeare_data.poems)
 print('Shakespeare - Sonnets:')
 print_progress(0, l, prefix = 'Progress:', suffix = 'Complete')
 for poem in shakespeare_data.poems.values():
-    groups = rhyme_labeler.label_poem_rhymes(poem)
+    groups = rhyme_labeler.get_rhyme_scheme(poem)
     group_sizes += [len(group) for group in groups]
     i += 1
     print_progress(i, l, prefix = 'Progress:', suffix = 'Complete')
@@ -63,7 +63,7 @@ i = 0
 print('Spenser - Amoretti:')
 print_progress(i, l, prefix = 'Progress:', suffix = 'Complete')
 for poem in spenser_data.poems.values():
-    groups = rhyme_labeler.label_poem_rhymes(poem)
+    groups = rhyme_labeler.get_rhyme_scheme(poem)
     group_sizes += [len(group) for group in groups]
     i += 1
     print_progress(i, l, prefix = 'Progress:', suffix = 'Complete')
@@ -80,7 +80,7 @@ l = len(sidney_data.poems)
 print('Sidney - Astrophil:')
 print_progress(0, l, prefix = 'Progress:', suffix = 'Complete')
 for poem in sidney_data.poems.values():
-    groups = rhyme_labeler.label_poem_rhymes(poem)
+    groups = rhyme_labeler.get_rhyme_scheme(poem)
     group_sizes += [len(group) for group in groups]
     i += 1
     print_progress(i, l, prefix = 'Progress:', suffix = 'Complete')

@@ -12,6 +12,7 @@ class DataLoader(object):
     '''
     def __init__(self, dir):
         self.poems = {}
+        self._dir = dir
         for filename in os.listdir(dir):
             if filename.endswith(".txt"):
                 path = dir + filename
@@ -21,11 +22,10 @@ class DataLoader(object):
                     self.poems[poem.title] = poem
 
     '''
-    Update a poem object within the sonnet sequence.
+    Write all updated poems to memory.
     '''
-    def update_poem(poem):
-        self.poems[poem.title] = poem
-
     def write(self):
-        # TODO(karaschechtman)
-        return None
+        for poem in self.poems.values():
+            path = self._dir + poem.title + ".txt"
+            with open(path, 'wb') as file:
+                file.write(poem.SerializeToString())

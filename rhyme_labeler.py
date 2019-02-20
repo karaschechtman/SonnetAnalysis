@@ -216,7 +216,7 @@ class RhymeLabeler(object):
 
     # ---------------------- PREDICT -----------------------
 
-    def label_poem_rhymes(self, poem, scheme=True, group=True):
+    def get_rhyme_scheme(self, poem, scheme=True, group=True):
         # TODO(karaschechtman): in hybrid,only accept scheme
         # labels with a certain level of confidence.
         '''
